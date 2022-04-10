@@ -13,7 +13,7 @@ cache:
   trigger:
     include:
       - project: devops/gitlab-pipes
-        file: /templates/docker-build.gitlab-ci.yml
+        file: /templates/docker-build-with-artifacts.gitlab-ci.yml
         ref: main
     strategy: depend
 
