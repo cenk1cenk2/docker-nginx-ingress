@@ -3,6 +3,12 @@ stages:
   - build
   - publish
 
+variables:
+  PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  DOCKER_REGISTRY: ""
+  DOCKER_REGISTRY_USERNAME: ""
+  DOCKER_REGISTRY_PASSWORD: ""
+
 cache:
   paths:
     - vendor/
@@ -45,9 +51,6 @@ build:
 publish:
   extends: .docker-common
   variables:
-    DOCKER_REGISTRY: ""
-    DOCKER_REGISTRY_USERNAME: ""
-    DOCKER_REGISTRY_PASSWORD: ""
     DOCKERFILE_CONTEXT: .
     DOCKER_IMAGE_NAME: cenk1cenk2/nginx-ingress
     IMAGE_TAGS: latest
