@@ -13,18 +13,11 @@ func main() {
 			Version:     VERSION,
 			Usage:       DESCRIPTION,
 			Description: DESCRIPTION,
+			Flags:       Flags,
 			Action: func(c *cli.Context) error {
 				utils.CliGreet(c)
 
-				err := cli.ShowAppHelp(c)
-
-				if err != nil {
-					return err
-				}
-
-				utils.Log.Fatalln("Need a subcommand to run!")
-
-				return nil
+				return Pipe.Exec()
 			},
 		},
 	)

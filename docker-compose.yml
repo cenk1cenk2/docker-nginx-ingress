@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+  ingress:
+    image: cenk1cenk2/nginx-ingress:test
+    environment:
+      LOG_LEVEL: debug
+      NGINX_INGRESS: |
+        [
+          {
+            "server": {
+              "listen": "80"
+            },
+            "upstream": {
+              "servers": [
+                "balance-1:80",
+                "balance-2:80"
+              ],
+              "options": {
+                "least_conn": null
+              }
+            }
+          }
+        ]
+    ports:
+      - 80:80
+
+  balance-1:
+    image: nginx:alpine
+
+  balance-2:
+    image: nginx:alpine

@@ -5,12 +5,12 @@ import (
 )
 
 type (
-	Node struct {
-		PackageManager string `validate:"oneof=npm yarn"`
+	Nginx struct {
+		Configuration string
 	}
 
 	Plugin struct {
-		Node Node
+		Nginx Nginx
 	}
 )
 
@@ -18,7 +18,7 @@ var Pipe Plugin = Plugin{}
 
 func (p Plugin) Exec() error {
 	utils.AddTasks(
-		[]utils.Task{VerifyVariables()},
+		[]utils.Task{VerifyVariables(), ReadTemplates(), GenerateTemplates(), StartNginx()},
 	)
 
 	utils.RunAllTasks(utils.DefaultRunAllTasksOptions)

@@ -1,0 +1,10 @@
+upstream {{ upstream }} {
+    {%- if options %}
+      {%- for key, value in options %}
+    {{ key }} {{ value }};
+      {%- endfor %}
+    {% endif -%}
+    {%- for server in servers -%}
+    server {{ server }};
+    {% endfor %}
+}
