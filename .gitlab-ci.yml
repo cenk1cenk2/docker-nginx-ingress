@@ -5,6 +5,9 @@ stages:
 
 variables:
   PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  DOCKER_REGISTRY: ""
+  DOCKER_REGISTRY_USERNAME: ""
+  DOCKER_REGISTRY_PASSWORD: ""
 
 cache:
   paths:
