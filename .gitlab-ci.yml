@@ -19,7 +19,7 @@ publish:
   stage: publish
   trigger:
     include:
-      - project: devops/gitlab-pipes
+      - project: devops/pipes
         file: /templates/docker-build-with-artifacts-dockerhub.gitlab-ci.yml
         ref: main
     strategy: depend
