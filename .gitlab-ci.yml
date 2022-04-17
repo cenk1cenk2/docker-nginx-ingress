@@ -6,12 +6,16 @@ stages:
 variables:
   PARENT_PIPELINE_ID: $CI_PIPELINE_ID
 
-cache:
-  paths:
-    - vendor/
-  key: ${CI_COMMIT_REF_SLUG}
+include:
+  - project: devops/pipes
+    file: /templates/go-install.gitlab-ci.yml
+    ref: main
 
-.docker-common:
+  - project: devops/pipes
+    file: /templates/go-build.gitlab-ci.yml
+    ref: main
+
+publish:
   stage: publish
   trigger:
     include:
@@ -19,34 +23,6 @@ cache:
         file: /templates/docker-build-with-artifacts-dockerhub.gitlab-ci.yml
         ref: main
     strategy: depend
-
-install:
-  stage: install
-  image: golang:alpine
-  script:
-    - apk add --no-cache --no-progress make git
-    - make install
-  artifacts:
-    paths:
-      - vendor/
-  tags:
-    - docker
-
-build:
-  stage: build
-  image: golang:alpine
-  script:
-    - apk add --no-cache --no-progress make git
-    - make -j4 build
-    - ./dist/pipe --help
-  artifacts:
-    paths:
-      - dist/
-  tags:
-    - docker
-
-publish:
-  extends: .docker-common
   variables:
     DOCKERFILE_CONTEXT: .
     DOCKER_IMAGE_NAME: cenk1cenk2/nginx-ingress
