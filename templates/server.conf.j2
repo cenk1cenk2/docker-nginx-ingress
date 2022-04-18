@@ -1,9 +1,0 @@
-server {
-    listen        {{ listen }};
-    proxy_pass    {{ upstream }};
-    {%- if options %}
-      {%- for key, value in options %}
-    {{ key }} {{ value }};
-      {%- endfor -%}
-    {% endif %}
-}

@@ -17,4 +17,16 @@ type (
 	}
 
 	Configuration []ConfigurationJson
+
+	ServerTemplate struct {
+		Listen   string
+		Upstream string
+		Options  map[string]string
+	}
+
+	UpstreamTemplate struct {
+		Upstream string
+		Servers  []string
+		Options  map[string]string
+	}
 )

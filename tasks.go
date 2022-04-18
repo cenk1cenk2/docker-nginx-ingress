@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,9 +9,9 @@ import (
 	"os/exec"
 	"path"
 	"sync"
+	"text/template"
 
 	utils "github.com/cenk1cenk2/ci-cd-pipes/utils"
-	"github.com/flosch/pongo2/v5"
 	"github.com/google/uuid"
 )
 
@@ -75,7 +76,7 @@ func ReadTemplates() utils.Task {
 	return utils.Task{
 		Metadata: utils.TaskMetadata{Context: "template"},
 		Task: func(t *utils.Task) error {
-			template, err := Templates.ReadFile("templates/server.conf.j2")
+			template, err := Templates.ReadFile("templates/server.conf.go.tmpl")
 
 			if err != nil {
 				return err
@@ -83,7 +84,7 @@ func ReadTemplates() utils.Task {
 
 			Context.Templates.Server = string(template)
 
-			template, err = Templates.ReadFile("templates/upstream.conf.j2")
+			template, err = Templates.ReadFile("templates/upstream.conf.go.tmpl")
 
 			if err != nil {
 				return err
@@ -117,7 +118,8 @@ func GenerateTemplates() utils.Task {
 						fmt.Sprintf("Creating server template for: %s", conf.Server.Listen),
 					)
 
-					tpl, err := pongo2.FromString(Context.Templates.Server)
+					tmpl, err := template.New("server.conf").
+						Parse(Context.Templates.Server)
 
 					if err != nil {
 						errs = append(errs, err)
@@ -125,13 +127,13 @@ func GenerateTemplates() utils.Task {
 						return
 					}
 
-					output, err := tpl.Execute(
-						pongo2.Context{
-							"listen":   conf.Server.Listen,
-							"upstream": id,
-							"options":  conf.Server.Options,
-						},
-					)
+					output := new(bytes.Buffer)
+
+					err = tmpl.Execute(output, ServerTemplate{
+						Listen:   conf.Server.Listen,
+						Upstream: id,
+						Options:  conf.Server.Options,
+					})
 
 					if err != nil {
 						errs = append(errs, err)
@@ -140,7 +142,11 @@ func GenerateTemplates() utils.Task {
 					}
 
 					t.Log.Debugln(
-						fmt.Sprintf("Server template for %s:\n%s", conf.Server.Listen, output),
+						fmt.Sprintf(
+							"Server template for %s:\n%s",
+							conf.Server.Listen,
+							output.String(),
+						),
 					)
 
 					p := path.Join(
@@ -151,13 +157,13 @@ func GenerateTemplates() utils.Task {
 
 					t.Log.Debugln(
 						fmt.Sprintf(
-							"Trying to generate service file for %s: %s",
+							"Writing service file for %s: %s",
 							conf.Server.Listen,
 							p,
 						),
 					)
 
-					err = os.WriteFile(p, []byte(output), 0644)
+					err = os.WriteFile(p, output.Bytes(), 0644)
 
 					if err != nil {
 						errs = append(errs, err)
@@ -169,7 +175,8 @@ func GenerateTemplates() utils.Task {
 						fmt.Sprintf("Creating upstream template for: %s", conf.Server.Listen),
 					)
 
-					tpl, err = pongo2.FromString(Context.Templates.Upstream)
+					tmpl, err = template.New("upstream.conf").
+						Parse(Context.Templates.Upstream)
 
 					if err != nil {
 						errs = append(errs, err)
@@ -177,13 +184,13 @@ func GenerateTemplates() utils.Task {
 						return
 					}
 
-					output, err = tpl.Execute(
-						pongo2.Context{
-							"upstream": id,
-							"servers":  conf.Upstream.Servers,
-							"options":  conf.Upstream.Options,
-						},
-					)
+					output = new(bytes.Buffer)
+
+					err = tmpl.Execute(output, UpstreamTemplate{
+						Upstream: id,
+						Servers:  conf.Upstream.Servers,
+						Options:  conf.Upstream.Options,
+					})
 
 					if err != nil {
 						errs = append(errs, err)
@@ -192,7 +199,11 @@ func GenerateTemplates() utils.Task {
 					}
 
 					t.Log.Debugln(
-						fmt.Sprintf("Upstream template for %s:\n%s", conf.Server.Listen, output),
+						fmt.Sprintf(
+							"Upstream template for %s:\n%s",
+							conf.Server.Listen,
+							output.String(),
+						),
 					)
 
 					p = path.Join(
@@ -203,13 +214,13 @@ func GenerateTemplates() utils.Task {
 
 					t.Log.Debugln(
 						fmt.Sprintf(
-							"Trying to generate upstream file for %s: %s",
+							"Writing upstream file for %s: %s",
 							conf.Server.Listen,
 							p,
 						),
 					)
 
-					err = os.WriteFile(p, []byte(output), 0644)
+					err = os.WriteFile(p, output.Bytes(), 0644)
 
 					if err != nil {
 						errs = append(errs, err)
