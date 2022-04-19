@@ -1,4 +1,4 @@
-package main
+package pipe
 
 import (
 	"github.com/urfave/cli/v2"

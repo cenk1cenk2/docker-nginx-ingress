@@ -1,45 +1,32 @@
 stages:
   - install
   - build
-  - publish
+  - docker
   - post
 
 variables:
-  PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  DOCKER_IMAGE_NAME: cenk1cenk2/nginx-ingress
+  IMAGE_TAGS: latest
+  README_DESCRIPTION: |
+    Load balances multiple docker containers through Nginx streams.
 
 include:
   - project: devops/pipes
     file: /templates/go-install.gitlab-ci.yml
-    ref: main
 
   - project: devops/pipes
     file: /templates/go-build.gitlab-ci.yml
-    ref: main
+
+  - project: devops/pipes
+    file: /templates/docker-build-dockerhub.gitlab-ci.yml
 
   - project: devops/pipes
     file: /templates/update-docker-hub-readme.gitlab-ci.yml
-    ref: main
 
-publish:
-  stage: publish
-  trigger:
-    include:
-      - project: devops/pipes
-        file: /templates/docker-build-with-artifacts-dockerhub.gitlab-ci.yml
-        ref: main
-    strategy: depend
-  variables:
-    DOCKERFILE_CONTEXT: .
-    DOCKER_IMAGE_NAME: cenk1cenk2/nginx-ingress
-    IMAGE_TAGS: latest
+build-docker-image:
   only:
     refs:
+      - schedules
       - main
+      - master
       - tags
-
-update-docker-hub-readme:
-  variables:
-    README_REPOSITORY: cenk1cenk2/nginx-ingress
-    README_FILE: ./README.md
-    README_DESCRIPTION: |
-      Load balances multiple docker containers through Nginx streams.

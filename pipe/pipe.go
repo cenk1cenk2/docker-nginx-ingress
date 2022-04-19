@@ -1,4 +1,4 @@
-package main
+package pipe
 
 import (
 	utils "github.com/cenk1cenk2/ci-cd-pipes/utils"

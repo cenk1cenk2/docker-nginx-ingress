@@ -1,4 +1,4 @@
-module github.com/cenk1cenk2/docker-nginx-ingress
+module gitlab.kilic.dev/docker/nginx-ingress
 
 go 1.17
 

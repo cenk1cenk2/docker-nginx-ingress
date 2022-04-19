@@ -4,6 +4,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	utils "github.com/cenk1cenk2/ci-cd-pipes/utils"
+	"gitlab.kilic.dev/docker/nginx-ingress/pipe"
 )
 
 func main() {
@@ -13,11 +14,11 @@ func main() {
 			Version:     VERSION,
 			Usage:       DESCRIPTION,
 			Description: DESCRIPTION,
-			Flags:       Flags,
+			Flags:       pipe.Flags,
 			Action: func(c *cli.Context) error {
 				utils.CliGreet(c)
 
-				return Pipe.Exec()
+				return pipe.Pipe.Exec()
 			},
 		},
 	)
