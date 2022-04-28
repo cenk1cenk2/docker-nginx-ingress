@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/cenk1cenk2/ci-cd-pipes v0.0.0-20220209133649-f50edc05ddd1
 	github.com/google/uuid v1.3.0
-	github.com/urfave/cli/v2 v2.4.0
+	github.com/urfave/cli/v2 v2.5.1
 )
 
 require (
