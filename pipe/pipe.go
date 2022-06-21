@@ -1,7 +1,7 @@
 package pipe
 
 import (
-	utils "github.com/cenk1cenk2/ci-cd-pipes/utils"
+	. "gitlab.kilic.dev/libraries/plumber/v3"
 )
 
 type (
@@ -9,19 +9,45 @@ type (
 		Configuration string
 	}
 
-	Plugin struct {
-		Nginx Nginx
+	Terminator struct {
+		ShouldTerminate chan bool
+		Terminated      chan bool
+	}
+
+	Pipe struct {
+		Ctx
+		Terminator
+
+		Nginx
 	}
 )
 
-var Pipe Plugin = Plugin{}
+var TL = TaskList[Pipe]{
+	Pipe: Pipe{},
+}
 
-func (p Plugin) Exec() error {
-	utils.AddTasks(
-		[]utils.Task{VerifyVariables(), ReadTemplates(), GenerateTemplates(), StartNginx()},
-	)
+func New(p *Plumber) *TaskList[Pipe] {
+	return TL.New(p).
+		ShouldRunBefore(func(tl *TaskList[Pipe]) error {
+			tl.Pipe.Terminator.ShouldTerminate = make(chan bool, 1)
+			tl.Pipe.Terminator.Terminated = make(chan bool, 1)
 
-	utils.RunAllTasks(utils.DefaultRunAllTasksOptions)
+			return nil
+		}).
+		SetTasks(
+			TL.JobParallel(
+				Terminate(&TL).Job(),
 
-	return nil
+				TL.JobSequence(
+					Setup(&TL).Job(),
+
+					TL.JobSequence(
+						ReadTemplates(&TL).Job(),
+						GenerateTemplates(&TL).Job(),
+					),
+
+					RunNginx(&TL).Job(),
+				),
+			),
+		)
 }

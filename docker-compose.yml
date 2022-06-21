@@ -34,10 +34,6 @@ services:
 
   balance-1:
     image: nginx:alpine
-    logging:
-      driver: none
 
   balance-2:
     image: nginx:alpine
-    logging:
-      driver: none

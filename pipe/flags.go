@@ -10,6 +10,6 @@ var Flags = []cli.Flag{
 		Usage:       "The configuration for the ingress operation of Nginx.",
 		Required:    true,
 		EnvVars:     []string{"NGINX_INGRESS"},
-		Destination: &Pipe.Nginx.Configuration,
+		Destination: &TL.Pipe.Nginx.Configuration,
 	},
 }
