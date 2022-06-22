@@ -12,18 +12,9 @@ func RunNginx(tl *TaskList[Pipe]) *Task[Pipe] {
 				"-g",
 				"daemon off;",
 			).
-				Set(func(c *Command[Pipe]) error {
-					go func() {
-						signal := <-t.Plumber.Terminator.ShouldTerminate
-
-						c.Log.Debugf("Forwarding signal to process: %s", signal)
-
-						if err := c.Command.Process.Signal(signal); err != nil {
-							t.SendError(err)
-						}
-
-						t.Plumber.SendTerminated()
-					}()
+				EnableTerminator().
+				SetOnTerminator(func(c *Command[Pipe]) error {
+					t.Plumber.SendTerminated()
 
 					return nil
 				}).
