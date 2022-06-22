@@ -14,13 +14,15 @@ func RunNginx(tl *TaskList[Pipe]) *Task[Pipe] {
 			).
 				Set(func(c *Command[Pipe]) error {
 					go func() {
-						signal := <-t.Plumber.Terminator.ShouldTerminateWithSignal
+						signal := <-t.Plumber.Terminator.ShouldTerminate
+
 						c.Log.Debugf("Forwarding signal to process: %s", signal)
+
 						if err := c.Command.Process.Signal(signal); err != nil {
 							t.SendError(err)
 						}
 
-						t.Plumber.Terminator.Terminated <- true
+						t.Plumber.SendTerminated()
 					}()
 
 					return nil
