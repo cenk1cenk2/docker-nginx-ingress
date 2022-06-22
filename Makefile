@@ -1,13 +1,14 @@
-GO_VERSION=1.17
+GO_VERSION=1.18
 
 GO_CMD=go
 GO_BUILD=$(GO_CMD) build
+GO_RUN=$(GO_CMD) run .
 GO_CLEAN=$(GO_CMD) clean
 GO_TEST=$(GO_CMD) test
 GO_GET=$(GO_CMD) get
 GO_VENDOR=$(GO_CMD) mod vendor
 
-DOCKER_IMAGE_NAME=cenk1cekn2/nginx-ingress
+GO_OPTION_C=0
 
 BINARY_FOLDER=dist
 BINARY_NAME=pipe
@@ -20,29 +21,33 @@ update:
 	$(GO_VENDOR)
 	$(GO_CMD) mod tidy -compat=$(GO_VERSION)
 
+tidy:
+	$(GO_CMD) mod tidy -compat=$(GO_VERSION)
+	$(GO_VENDOR)
 
 all: test build
 
 test:
-	$(GO_TEST) -v ./...
+	CGO_ENABLED=$(GO_OPTION_C) $(GO_TEST) -v -p 1 ./...
 
 clean:
 	$(GO_CLEAN)
 	rm -f $(BINARY_FOLDER)/$(BINARY_NAME)*
+
+.PHONY: build
 
 # Cross compilation
 
 build: build-linux-amd64
 
 build-linux-amd64:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO_BUILD) -mod=readonly -o $(BINARY_FOLDER)/$(BINARY_NAME)
+	CGO_ENABLED=$(GO_OPTION_C) GOOS=linux GOARCH=amd64 $(GO_BUILD) -mod=readonly -o $(BINARY_FOLDER)/$(BINARY_NAME)
 
-.PHONY: build
+dev:
+	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) --log-level debug $(ARGS)
 
-build-docker: build build-docker-image
+docs:
+	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) --log-level debug docs
 
-build-docker-image:
-	docker build -t $(DOCKER_IMAGE_NAME):test .
-
-run:
-	./$(BINARY_FOLDER)/$(BINARY_NAME) $(ARGS)
+help:
+	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) $(ARGS) --help
