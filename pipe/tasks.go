@@ -12,14 +12,6 @@ import (
 	. "gitlab.kilic.dev/libraries/plumber/v3"
 )
 
-type Ctx struct {
-	NginxConfiguration Configuration
-	Templates          struct {
-		Server   string
-		Upstream string
-	}
-}
-
 func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("init").
 		ShouldRunBefore(func(t *Task[Pipe]) error {
@@ -27,12 +19,39 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 				return fmt.Errorf("Can not decode configuration: %s", err)
 			}
 
-			return nil
-		}).
-		Set(func(t *Task[Pipe]) error {
 			if err := tl.Validate(&t.Pipe.Ctx); err != nil {
 				return err
 			}
+
+			t.Pipe.Ctx.Directories.ServerConfiguration = path.Join(
+				NGINX_ROOT_CONFIGURATION_FOLDER,
+				TEMPLATE_FOLDER_SERVERS,
+			)
+
+			if err := os.RemoveAll(t.Pipe.Ctx.Directories.ServerConfiguration); err != nil {
+				return err
+			}
+
+			if err := os.MkdirAll(t.Pipe.Ctx.Directories.ServerConfiguration, os.ModePerm); err != nil {
+				return err
+			}
+
+			t.Pipe.Ctx.Directories.UpstreamConfiguration = path.Join(
+				NGINX_ROOT_CONFIGURATION_FOLDER,
+				TEMPLATE_FOLDER_UPSTREAMS,
+			)
+
+			if err := os.RemoveAll(t.Pipe.Ctx.Directories.UpstreamConfiguration); err != nil {
+				return err
+			}
+
+			if err := os.MkdirAll(t.Pipe.Ctx.Directories.UpstreamConfiguration, os.ModePerm); err != nil {
+				return err
+			}
+
+			return nil
+		}).
+		Set(func(t *Task[Pipe]) error {
 
 			return nil
 		})
@@ -52,11 +71,7 @@ func ReadTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 
 				return nil
 			}).
-				AddSelfToParent(func(pt, st *Task[Pipe]) {
-					pt.ExtendSubtask(func(job Job) Job {
-						return tl.JobParallel(job, st.Job())
-					})
-				})
+				AddSelfToTheParentAsParallel()
 
 			t.CreateSubtask("template:upstream").Set(func(t *Task[Pipe]) error {
 				template, err := Templates.ReadFile("templates/upstream.conf.go.tmpl")
@@ -69,11 +84,7 @@ func ReadTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 
 				return nil
 			}).
-				AddSelfToParent(func(pt, st *Task[Pipe]) {
-					pt.ExtendSubtask(func(job Job) Job {
-						return tl.JobParallel(job, st.Job())
-					})
-				})
+				AddSelfToTheParentAsParallel()
 
 			return nil
 		}).ShouldRunAfter(func(t *Task[Pipe]) error {
@@ -120,8 +131,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 									)
 
 									p := path.Join(
-										NGINX_ROOT_CONFIGURATION_FOLDER,
-										TEMPLATE_FOLDER_SERVERS,
+										t.Pipe.Ctx.Directories.ServerConfiguration,
 										fmt.Sprintf("%s.conf", id),
 									)
 
@@ -137,11 +147,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 
 									return nil
 								}).
-								AddSelfToParent(func(pt, st *Task[Pipe]) {
-									pt.ExtendSubtask(func(job Job) Job {
-										return tl.JobParallel(job, st.Job())
-									})
-								})
+								AddSelfToTheParentAsParallel()
 
 								// upstream template
 							t.CreateSubtask(fmt.Sprintf("generate:%s:upstream", conf.Server.Listen)).
@@ -171,8 +177,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 									)
 
 									p := path.Join(
-										NGINX_ROOT_CONFIGURATION_FOLDER,
-										TEMPLATE_FOLDER_UPSTREAMS,
+										t.Pipe.Ctx.Directories.UpstreamConfiguration,
 										fmt.Sprintf("%s.conf", id),
 									)
 
