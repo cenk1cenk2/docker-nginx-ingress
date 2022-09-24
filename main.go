@@ -8,7 +8,10 @@ import (
 )
 
 func main() {
-	p := Plumber{}
+	p := Plumber{
+		DocsFile:         "CLI.md",
+		DocsExcludeFlags: true,
+	}
 
 	p.New(
 		func(a *Plumber) *cli.App {

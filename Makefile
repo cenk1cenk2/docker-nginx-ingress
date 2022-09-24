@@ -1,4 +1,4 @@
-GO_VERSION=1.18
+GO_VERSION=1.19
 
 GO_CMD=go
 GO_BUILD=$(GO_CMD) build
@@ -20,6 +20,9 @@ update:
 	$(GO_GET) -u all
 	$(GO_VENDOR)
 	$(GO_CMD) mod tidy -compat=$(GO_VERSION)
+
+lint:
+	CGO_ENABLED=$(GO_OPTION_C)	golangci-lint run ./...
 
 tidy:
 	$(GO_CMD) mod tidy -compat=$(GO_VERSION)
@@ -47,7 +50,7 @@ dev:
 	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) --log-level debug $(ARGS)
 
 docs:
-	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) --log-level debug docs
+	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) MARKDOWN_DOC
 
 help:
 	CGO_ENABLED=$(GO_OPTION_C) $(GO_RUN) $(ARGS) --help

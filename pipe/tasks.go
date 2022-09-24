@@ -16,7 +16,7 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("init").
 		ShouldRunBefore(func(t *Task[Pipe]) error {
 			if err := json.Unmarshal([]byte(t.Pipe.Nginx.Configuration), &t.Pipe.Ctx.NginxConfiguration); err != nil {
-				return fmt.Errorf("Can not decode configuration: %s", err)
+				return fmt.Errorf("Can not decode configuration: %w", err)
 			}
 
 			if err := tl.Validate(&t.Pipe.Ctx); err != nil {
@@ -52,7 +52,6 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 			return nil
 		}).
 		Set(func(t *Task[Pipe]) error {
-
 			return nil
 		})
 }
@@ -96,7 +95,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("generate").
 		Set(func(t *Task[Pipe]) error {
 			for i, v := range t.Pipe.Ctx.NginxConfiguration {
-				func(i int, conf ConfigurationJson) {
+				func(_ int, conf ConfigurationJson) {
 					t.CreateSubtask(fmt.Sprintf("generate:%s", conf.Server.Listen)).
 						Set(func(t *Task[Pipe]) error {
 							id := uuid.New().String()
@@ -141,7 +140,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 										p,
 									)
 
-									if err := os.WriteFile(p, output.Bytes(), 0644); err != nil {
+									if err := os.WriteFile(p, output.Bytes(), 0600); err != nil {
 										return err
 									}
 
@@ -189,7 +188,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 										),
 									)
 
-									if err := os.WriteFile(p, output.Bytes(), 0644); err != nil {
+									if err := os.WriteFile(p, output.Bytes(), 0600); err != nil {
 										return err
 									}
 

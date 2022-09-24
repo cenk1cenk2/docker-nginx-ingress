@@ -4,6 +4,8 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+//revive:disable:line-length-limit
+
 var Flags = []cli.Flag{
 	&cli.StringFlag{
 		Name:        "nginx.configuration",

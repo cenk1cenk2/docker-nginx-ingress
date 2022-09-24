@@ -6,6 +6,7 @@
 
 Nginx ingress controller for docker-compose stacks, where it takes in a JSON environment variable for the defined containers and load-balances them through streams of Nginx.
 
+- [CLI Documentation](./CLI.md)
 <!-- toc -->
 
 - [Setup](#setup)

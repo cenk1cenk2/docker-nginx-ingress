@@ -9,6 +9,7 @@ variables:
   IMAGE_TAGS: latest
   README_DESCRIPTION: |
     Load balances multiple docker containers through Nginx streams.
+  GO_LINT_COMMAND: make lint
 
 include:
   - project: devops/pipes
