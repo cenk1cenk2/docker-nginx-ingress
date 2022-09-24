@@ -13,10 +13,7 @@ variables:
 
 include:
   - project: devops/pipes
-    file: /templates/go-install.gitlab-ci.yml
-
-  - project: devops/pipes
-    file: /templates/go-build.gitlab-ci.yml
+    file: /templates/go.gitlab-ci.yml
 
   - project: devops/pipes
     file: /templates/docker-build-dockerhub.gitlab-ci.yml
