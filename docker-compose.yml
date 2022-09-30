@@ -6,7 +6,7 @@ services:
     build:
       context: .
     environment:
-      LOG_LEVEL: debug
+      LOG_LEVEL: trace
       NGINX_INGRESS: |
         [
           {

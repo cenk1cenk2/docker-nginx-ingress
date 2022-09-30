@@ -1,7 +1,7 @@
 package pipe
 
 import (
-	. "gitlab.kilic.dev/libraries/plumber/v3"
+	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
 
 type (
@@ -22,16 +22,10 @@ var TL = TaskList[Pipe]{
 
 func New(p *Plumber) *TaskList[Pipe] {
 	return TL.New(p).
-		SetTasks(
-			TL.JobSequence(
-				Setup(&TL).Job(),
-
-				TL.JobSequence(
-					ReadTemplates(&TL).Job(),
-					GenerateTemplates(&TL).Job(),
-				),
-
-				RunNginx(&TL).Job(),
-			),
-		)
+		Set(func(tl *TaskList[Pipe]) Job {
+			return tl.JobSequence(
+				Tasks(tl).Job(),
+				Services(tl).Job(),
+			)
+		})
 }

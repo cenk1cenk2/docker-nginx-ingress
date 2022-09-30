@@ -1,8 +1,17 @@
 package pipe
 
 import (
-	. "gitlab.kilic.dev/libraries/plumber/v3"
+	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
+
+func Services(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("services", "parent").
+		SetJobWrapper(func(job Job) Job {
+			return tl.JobParallel(
+				RunNginx(tl).Job(),
+			)
+		})
+}
 
 func RunNginx(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("nginx").
@@ -12,12 +21,8 @@ func RunNginx(tl *TaskList[Pipe]) *Task[Pipe] {
 				"-g",
 				"daemon off;",
 			).
+				EnsureIsAlive().
 				EnableTerminator().
-				SetOnTerminator(func(c *Command[Pipe]) error {
-					t.Plumber.SendTerminated()
-
-					return nil
-				}).
 				AddSelfToTheTask()
 
 			return nil

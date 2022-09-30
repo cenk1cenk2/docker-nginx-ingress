@@ -9,8 +9,22 @@ import (
 	"text/template"
 
 	"github.com/google/uuid"
-	. "gitlab.kilic.dev/libraries/plumber/v3"
+	. "gitlab.kilic.dev/libraries/plumber/v4"
 )
+
+func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("tasks", "parent").
+		SetJobWrapper(func(job Job) Job {
+			return tl.JobSequence(
+				Setup(tl).Job(),
+
+				tl.JobSequence(
+					ReadTemplates(tl).Job(),
+					GenerateTemplates(tl).Job(),
+				),
+			)
+		})
+}
 
 func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("init").
@@ -59,7 +73,7 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 func ReadTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("template").
 		Set(func(t *Task[Pipe]) error {
-			t.CreateSubtask("template:server").Set(func(t *Task[Pipe]) error {
+			t.CreateSubtask("server").Set(func(t *Task[Pipe]) error {
 				template, err := Templates.ReadFile("templates/server.conf.go.tmpl")
 
 				if err != nil {
@@ -72,7 +86,7 @@ func ReadTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 			}).
 				AddSelfToTheParentAsParallel()
 
-			t.CreateSubtask("template:upstream").Set(func(t *Task[Pipe]) error {
+			t.CreateSubtask("upstream").Set(func(t *Task[Pipe]) error {
 				template, err := Templates.ReadFile("templates/upstream.conf.go.tmpl")
 
 				if err != nil {
@@ -96,12 +110,12 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 		Set(func(t *Task[Pipe]) error {
 			for i, v := range t.Pipe.Ctx.NginxConfiguration {
 				func(_ int, conf ConfigurationJson) {
-					t.CreateSubtask(fmt.Sprintf("generate:%s", conf.Server.Listen)).
+					t.CreateSubtask(conf.Server.Listen).
 						Set(func(t *Task[Pipe]) error {
 							id := uuid.New().String()
 
 							// stream template
-							t.CreateSubtask(fmt.Sprintf("generate:%s:server", conf.Server.Listen)).
+							t.CreateSubtask("server").
 								Set(func(t *Task[Pipe]) error {
 									t.Log.Debugf("Stream %s will have the id: %s", conf.Server.Listen, id)
 
@@ -149,7 +163,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 								AddSelfToTheParentAsParallel()
 
 								// upstream template
-							t.CreateSubtask(fmt.Sprintf("generate:%s:upstream", conf.Server.Listen)).
+							t.CreateSubtask("upstream").
 								Set(func(t *Task[Pipe]) error {
 									t.Log.Infof("Creating upstream template for: %s", conf.Server.Listen)
 
