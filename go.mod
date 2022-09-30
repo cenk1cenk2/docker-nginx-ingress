@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/google/uuid v1.3.0
 	github.com/urfave/cli/v2 v2.17.1
-	gitlab.kilic.dev/libraries/plumber/v4 v4.6.0
+	gitlab.kilic.dev/libraries/plumber/v4 v4.7.0
 )
 
 require (
@@ -28,4 +28,4 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 )
 
-replace gitlab.kilic.dev/libraries/plumber/v4 => /home/cenk/development/plumber
+// replace gitlab.kilic.dev/libraries/plumber/v4 => /home/cenk/development/plumber
