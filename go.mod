@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/google/uuid v1.3.0
 	github.com/urfave/cli/v2 v2.20.3
-	gitlab.kilic.dev/libraries/plumber/v4 v4.8.16
+	gitlab.kilic.dev/libraries/plumber/v4 v4.9.1
 )
 
 require (
@@ -22,10 +22,10 @@ require (
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.1 // indirect
 	gitlab.kilic.dev/libraries/go-utils v1.3.6 // indirect
-	golang.org/x/crypto v0.0.0-20220926161630-eccd6366d1be // indirect
-	golang.org/x/exp v0.0.0-20221025133541-111beb427cde // indirect
-	golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f // indirect
+	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/text v0.4.0 // indirect
 )
 
 // replace gitlab.kilic.dev/libraries/plumber/v4 => /home/cenk/development/plumber
