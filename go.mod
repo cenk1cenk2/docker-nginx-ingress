@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/google/uuid v1.3.0
-	github.com/urfave/cli/v2 v2.23.0
+	github.com/urfave/cli/v2 v2.23.2
 	gitlab.kilic.dev/libraries/plumber/v4 v4.11.6
 )
 
