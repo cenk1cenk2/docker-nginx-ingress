@@ -4,8 +4,8 @@ go 1.19
 
 require (
 	github.com/google/uuid v1.3.0
-	github.com/urfave/cli/v2 v2.23.2
-	gitlab.kilic.dev/libraries/plumber/v4 v4.11.8
+	github.com/urfave/cli/v2 v2.23.4
+	gitlab.kilic.dev/libraries/plumber/v4 v4.12.0
 )
 
 require (
@@ -23,7 +23,7 @@ require (
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.1 // indirect
 	gitlab.kilic.dev/libraries/go-utils v1.3.8 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/exp v0.0.0-20221028150844-83b7d23a625f // indirect
+	golang.org/x/exp v0.0.0-20221106115401-f9659909a136 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 )
