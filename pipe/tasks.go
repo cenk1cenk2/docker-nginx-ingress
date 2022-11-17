@@ -2,7 +2,6 @@ package pipe
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -29,14 +28,6 @@ func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("init").
 		ShouldRunBefore(func(t *Task[Pipe]) error {
-			if err := json.Unmarshal([]byte(t.Pipe.Nginx.Configuration), &t.Pipe.Ctx.NginxConfiguration); err != nil {
-				return fmt.Errorf("Can not decode configuration: %w", err)
-			}
-
-			if err := tl.Validate(&t.Pipe.Ctx); err != nil {
-				return err
-			}
-
 			t.Pipe.Ctx.Directories.ServerConfiguration = path.Join(
 				NGINX_ROOT_CONFIGURATION_FOLDER,
 				TEMPLATE_FOLDER_SERVERS,
@@ -108,7 +99,7 @@ func ReadTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("generate").
 		Set(func(t *Task[Pipe]) error {
-			for i, v := range t.Pipe.Ctx.NginxConfiguration {
+			for i, v := range t.Pipe.Nginx.Configuration {
 				func(_ int, conf ConfigurationJson) {
 					t.CreateSubtask(conf.Server.Listen).
 						Set(func(t *Task[Pipe]) error {

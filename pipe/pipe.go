@@ -6,7 +6,7 @@ import (
 
 type (
 	Nginx struct {
-		Configuration string
+		Configuration
 	}
 
 	Pipe struct {
@@ -22,6 +22,9 @@ var TL = TaskList[Pipe]{
 
 func New(p *Plumber) *TaskList[Pipe] {
 	return TL.New(p).
+		ShouldRunBefore(func(tl *TaskList[Pipe]) error {
+			return ProcessFlags(tl)
+		}).
 		Set(func(tl *TaskList[Pipe]) Job {
 			return tl.JobSequence(
 				Tasks(tl).Job(),

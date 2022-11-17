@@ -1,8 +1,7 @@
 package pipe
 
 type Ctx struct {
-	NginxConfiguration Configuration
-	Directories        struct {
+	Directories struct {
 		ServerConfiguration   string
 		UpstreamConfiguration string
 	}
