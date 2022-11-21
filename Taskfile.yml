@@ -69,10 +69,6 @@ tasks:
         vars:
           os: linux
           arch: amd64
-      - task: build.platform
-        vars:
-          os: linux
-          arch: arm64
 
   build.platform:
     internal: true
