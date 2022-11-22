@@ -20,3 +20,4 @@ dist/
 # Go.patch:
 /vendor/
 /Godeps/
+/.task/
