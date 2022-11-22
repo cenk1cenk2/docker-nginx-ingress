@@ -6,7 +6,7 @@ stages:
 
 variables:
   DOCKER_IMAGE_NAME: cenk1cenk2/nginx-ingress
-  IMAGE_TAGS: latest
+  DOCKER_IMAGE_TAGS: latest
   README_DESCRIPTION: |
     Load balances multiple docker containers through Nginx streams.
 

@@ -97,6 +97,7 @@ tasks:
       LOG_LEVEL: trace
     cmds:
       - go run . MARKDOWN_DOC
+      - go run . MARKDOWN_EMBED
 
   help:
     desc: Generates help for the application.
@@ -109,6 +110,8 @@ tasks:
       - docker-compose build
     sources:
       - "dist/**"
+      - "Dockerfile*"
+      - "docker-compose*.yml"
 
   docker.up:
     desc: Runs the docker-compose application.

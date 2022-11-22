@@ -8,14 +8,8 @@ import (
 )
 
 func main() {
-	p := Plumber{
-		DocsFile:               "CLI.md",
-		DocsExcludeFlags:       true,
-		DocsExcludeHelpCommand: true,
-	}
-
-	p.New(
-		func(a *Plumber) *cli.App {
+	NewPlumber(
+		func(p *Plumber) *cli.App {
 			return &cli.App{
 				Name:        CLI_NAME,
 				Version:     VERSION,
@@ -29,9 +23,16 @@ func main() {
 				},
 				Action: func(c *cli.Context) error {
 					return pipe.TL.RunJobs(
-						pipe.New(a).SetCliContext(c).Job(),
+						pipe.New(p).SetCliContext(c).Job(),
 					)
 				},
 			}
-		}).Run()
+		}).
+		SetDocumentationOptions(DocumentationOptions{
+			MarkdownOutputFile: "CLI.md",
+			MarkdownBehead:     0,
+			ExcludeFlags:       true,
+			ExcludeHelpCommand: true,
+		}).
+		Run()
 }
