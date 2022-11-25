@@ -1,10 +1,12 @@
+# syntax=docker/dockerfile-upstream:master-labs
 FROM nginx:alpine
 
-COPY ./dist/pipe /usr/bin/pipe
+RUN \
+  apk add --no-cache tini
+
+COPY --chmod=777 ./dist/pipe-${BUILDOS}-${BUILDARCH} /usr/bin/pipe
 
 RUN \
-  apk add --no-cache tini && \
-  chmod +x /usr/bin/pipe && \
   # smoke test
   pipe --help
 
