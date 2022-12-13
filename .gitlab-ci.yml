@@ -26,6 +26,8 @@ docker-build:
         DOCKER_IMAGE_TAGS: latest
         GITLAB_CI_ARCH:
           - amd64
+  dependencies:
+    - build
   only:
     refs:
       - schedules
@@ -37,6 +39,7 @@ update-docker-hub-readme:
   variables:
     README_DESCRIPTION: |
       Load balances multiple docker containers through Nginx streams.
+  dependencies: []
   only:
     refs:
       - schedules
