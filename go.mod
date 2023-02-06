@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/google/uuid v1.3.0
 	github.com/urfave/cli/v2 v2.24.3
-	gitlab.kilic.dev/libraries/plumber/v4 v4.31.9
+	gitlab.kilic.dev/libraries/plumber/v4 v4.31.10
 )
 
 require (
@@ -19,7 +19,7 @@ require (
 	github.com/go-task/slim-sprig v2.20.0+incompatible // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
-	github.com/joho/godotenv v1.5.0 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
@@ -28,7 +28,7 @@ require (
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.1 // indirect
 	gitlab.kilic.dev/libraries/go-utils/v2 v2.0.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
-	golang.org/x/exp v0.0.0-20230129154200-a960b3787bd2 // indirect
+	golang.org/x/exp v0.0.0-20230203172020-98cc5a0785f9 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
 )
