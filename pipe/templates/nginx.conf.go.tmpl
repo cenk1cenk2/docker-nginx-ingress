@@ -1,0 +1,14 @@
+worker_processes {{ .CpuCores }};
+worker_rlimit_nofile {{ .RLimit }};
+
+events {
+  worker_connections {{ .WorkerConnections }};
+  use epoll;
+  multi_accept on;
+}
+
+stream {
+  include ./upstreams/*.conf;
+
+  include ./servers/*.conf;
+}

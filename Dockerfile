@@ -10,8 +10,6 @@ RUN \
   # smoke test
   pipe --help
 
-COPY ./.docker/hostfs /
-
 WORKDIR /etc/nginx
 
 ENTRYPOINT [ "tini", "pipe" ]

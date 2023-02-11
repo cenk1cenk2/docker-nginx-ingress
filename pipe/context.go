@@ -6,6 +6,7 @@ type Ctx struct {
 		UpstreamConfiguration string
 	}
 	Templates struct {
+		Nginx    string
 		Server   string
 		Upstream string
 	}

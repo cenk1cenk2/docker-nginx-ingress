@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"runtime"
+	"syscall"
 	"text/template"
 
 	"github.com/google/uuid"
@@ -19,7 +21,10 @@ func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 
 				tl.JobSequence(
 					ReadTemplates(tl).Job(),
-					GenerateTemplates(tl).Job(),
+					tl.JobParallel(
+						GenerateNginxConfigurationTemplate(tl).Job(),
+						GenerateTemplates(tl).Job(),
+					),
 				),
 			)
 		})
@@ -64,6 +69,19 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 func ReadTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("template").
 		Set(func(t *Task[Pipe]) error {
+			t.CreateSubtask("nginx").Set(func(t *Task[Pipe]) error {
+				template, err := Templates.ReadFile("templates/nginx.conf.go.tmpl")
+
+				if err != nil {
+					return err
+				}
+
+				t.Pipe.Ctx.Templates.Nginx = string(template)
+
+				return nil
+			}).
+				AddSelfToTheParentAsParallel()
+
 			t.CreateSubtask("server").Set(func(t *Task[Pipe]) error {
 				template, err := Templates.ReadFile("templates/server.conf.go.tmpl")
 
@@ -94,6 +112,57 @@ func ReadTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 		}).ShouldRunAfter(func(t *Task[Pipe]) error {
 		return t.RunSubtasks()
 	})
+}
+
+func GenerateNginxConfigurationTemplate(tl *TaskList[Pipe]) *Task[Pipe] {
+	return tl.CreateTask("generate", "nginx").
+		Set(func(t *Task[Pipe]) error {
+			t.Log.Infof("Creating then Nginx configuration template.")
+
+			tmpl, err := template.New("nginx.conf").Parse(t.Pipe.Ctx.Templates.Nginx)
+
+			if err != nil {
+				return err
+			}
+
+			output := new(bytes.Buffer)
+
+			var rLimit syscall.Rlimit
+
+			if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit); err != nil {
+				return err
+			}
+
+			cores := runtime.NumCPU()
+
+			if err = tmpl.Execute(output, NginxTemplate{
+				CpuCores:          cores,
+				RLimit:            rLimit.Cur,
+				WorkerConnections: rLimit.Cur / uint64(cores),
+			}); err != nil {
+				return err
+			}
+
+			t.Log.Debugf(
+				"Nginx configuration template:\n%s",
+				output.String(),
+			)
+
+			p := path.Join(
+				NGINX_ROOT_CONFIGURATION_FOLDER,
+				NGINX_CONFIGURATION,
+			)
+
+			t.Log.Debugln(
+				"Writing Nginx configuration file.",
+			)
+
+			if err := os.WriteFile(p, output.Bytes(), 0600); err != nil {
+				return err
+			}
+
+			return nil
+		})
 }
 
 func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {

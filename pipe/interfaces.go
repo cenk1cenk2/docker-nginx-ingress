@@ -18,6 +18,12 @@ type (
 
 	Configuration []ConfigurationJson
 
+	NginxTemplate struct {
+		CpuCores          int
+		RLimit            uint64
+		WorkerConnections uint64
+	}
+
 	ServerTemplate struct {
 		Listen   string
 		Upstream string
