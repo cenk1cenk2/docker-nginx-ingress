@@ -5,14 +5,14 @@ go 1.20
 require (
 	github.com/google/uuid v1.3.0
 	github.com/urfave/cli/v2 v2.25.0
-	gitlab.kilic.dev/libraries/plumber/v4 v4.32.2
+	gitlab.kilic.dev/libraries/plumber/v4 v4.32.3
 )
 
 require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
-	github.com/creasty/defaults v1.6.0 // indirect
+	github.com/creasty/defaults v1.7.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.11.2 // indirect
