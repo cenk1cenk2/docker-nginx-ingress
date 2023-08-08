@@ -1,6 +1,6 @@
 module gitlab.kilic.dev/docker/nginx-ingress
 
-go 1.20
+go 1.21
 
 require (
 	github.com/google/uuid v1.3.0
