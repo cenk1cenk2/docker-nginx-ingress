@@ -3,7 +3,7 @@ module gitlab.kilic.dev/docker/nginx-ingress
 go 1.21
 
 require (
-	github.com/google/uuid v1.3.1
+	github.com/google/uuid v1.4.0
 	github.com/urfave/cli/v2 v2.25.7
 	gitlab.kilic.dev/libraries/plumber/v4 v4.32.37
 )
