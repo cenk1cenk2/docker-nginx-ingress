@@ -5,7 +5,7 @@ go 1.21.4
 require (
 	github.com/google/uuid v1.4.0
 	github.com/urfave/cli/v2 v2.25.7
-	gitlab.kilic.dev/libraries/plumber/v5 v5.2.0
+	gitlab.kilic.dev/libraries/plumber/v5 v5.2.1
 )
 
 require (
