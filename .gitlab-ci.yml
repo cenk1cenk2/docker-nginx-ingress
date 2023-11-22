@@ -5,6 +5,7 @@ stages:
   - post
 
 variables:
+  GO_VERSION: 1.21-alpine
   DOCKER_IMAGE_NAME: cenk1cenk2/nginx-ingress
 
 include:

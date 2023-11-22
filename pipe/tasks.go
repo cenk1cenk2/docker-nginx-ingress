@@ -10,12 +10,12 @@ import (
 	"text/template"
 
 	"github.com/google/uuid"
-	. "gitlab.kilic.dev/libraries/plumber/v4"
+	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
 func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("tasks", "parent").
-		SetJobWrapper(func(job Job) Job {
+		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
 			return tl.JobSequence(
 				Setup(tl).Job(),
 
@@ -55,11 +55,7 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 				return err
 			}
 
-			if err := os.MkdirAll(t.Pipe.Ctx.Directories.UpstreamConfiguration, os.ModePerm); err != nil {
-				return err
-			}
-
-			return nil
+			return os.MkdirAll(t.Pipe.Ctx.Directories.UpstreamConfiguration, os.ModePerm)
 		}).
 		Set(func(t *Task[Pipe]) error {
 			return nil
@@ -157,11 +153,7 @@ func GenerateNginxConfigurationTemplate(tl *TaskList[Pipe]) *Task[Pipe] {
 				"Writing Nginx configuration file.",
 			)
 
-			if err := os.WriteFile(p, output.Bytes(), 0600); err != nil {
-				return err
-			}
-
-			return nil
+			return os.WriteFile(p, output.Bytes(), 0600)
 		})
 }
 
@@ -214,11 +206,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 										p,
 									)
 
-									if err := os.WriteFile(p, output.Bytes(), 0600); err != nil {
-										return err
-									}
-
-									return nil
+									return os.WriteFile(p, output.Bytes(), 0600)
 								}).
 								AddSelfToTheParentAsParallel()
 
@@ -262,11 +250,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 										),
 									)
 
-									if err := os.WriteFile(p, output.Bytes(), 0600); err != nil {
-										return err
-									}
-
-									return nil
+									return os.WriteFile(p, output.Bytes(), 0600)
 								}).
 								AddSelfToTheParentAsParallel()
 
