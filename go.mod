@@ -5,7 +5,7 @@ go 1.21.5
 require (
 	github.com/google/uuid v1.5.0
 	github.com/urfave/cli/v2 v2.26.0
-	gitlab.kilic.dev/libraries/plumber/v5 v5.4.1
+	gitlab.kilic.dev/libraries/plumber/v5 v5.4.2
 )
 
 require (
@@ -25,7 +25,7 @@ require (
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.2 // indirect
 	gitlab.kilic.dev/libraries/go-utils/v2 v2.1.2 // indirect
 	golang.org/x/crypto v0.16.0 // indirect
-	golang.org/x/exp v0.0.0-20231214170342-aacd6d4b4611 // indirect
+	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
