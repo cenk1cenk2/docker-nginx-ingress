@@ -6,7 +6,7 @@ import (
 
 func Services(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("services", "parent").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(_ Job, _ *Task[Pipe]) Job {
 			return tl.JobParallel(
 				RunNginx(tl).Job(),
 			)

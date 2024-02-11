@@ -15,7 +15,7 @@ import (
 
 func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("tasks", "parent").
-		SetJobWrapper(func(job Job, t *Task[Pipe]) Job {
+		SetJobWrapper(func(_ Job, _ *Task[Pipe]) Job {
 			return tl.JobSequence(
 				Setup(tl).Job(),
 
@@ -32,7 +32,7 @@ func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 
 func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 	return tl.CreateTask("init").
-		ShouldRunBefore(func(t *Task[Pipe]) error {
+		Set(func(t *Task[Pipe]) error {
 			t.Pipe.Ctx.Directories.ServerConfiguration = path.Join(
 				NGINX_ROOT_CONFIGURATION_FOLDER,
 				TEMPLATE_FOLDER_SERVERS,
@@ -56,9 +56,6 @@ func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
 			}
 
 			return os.MkdirAll(t.Pipe.Ctx.Directories.UpstreamConfiguration, os.ModePerm)
-		}).
-		Set(func(t *Task[Pipe]) error {
-			return nil
 		})
 }
 
