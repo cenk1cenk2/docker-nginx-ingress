@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/google/uuid v1.6.0
 	github.com/urfave/cli/v2 v2.27.1
-	gitlab.kilic.dev/libraries/plumber/v5 v5.4.14
+	gitlab.kilic.dev/libraries/plumber/v5 v5.4.15
 )
 
 require (
@@ -14,7 +14,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.18.0 // indirect
+	github.com/go-playground/validator/v10 v10.19.0 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
