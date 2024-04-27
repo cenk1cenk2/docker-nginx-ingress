@@ -4,12 +4,12 @@ go 1.22.2
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/urfave/cli/v2 v2.27.1
+	github.com/urfave/cli/v2 v2.27.2
 	gitlab.kilic.dev/libraries/plumber/v5 v5.4.15
 )
 
 require (
-	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/creasty/defaults v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -21,7 +21,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/workanator/go-floc/v3 v3.0.1 // indirect
-	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
+	github.com/xrash/smetrics v0.0.0-20240312152122-5f08fbb34913 // indirect
 	gitlab.kilic.dev/libraries/go-broadcaster v1.1.3 // indirect
 	gitlab.kilic.dev/libraries/go-utils/v2 v2.1.3 // indirect
 	golang.org/x/crypto v0.19.0 // indirect
