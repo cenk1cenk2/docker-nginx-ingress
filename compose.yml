@@ -1,5 +1,3 @@
-version: "3.7"
-
 services:
   ingress:
     image: cenk1cenk2/nginx-ingress:test

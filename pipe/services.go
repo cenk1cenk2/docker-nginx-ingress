@@ -1,21 +1,21 @@
 package pipe
 
 import (
-	. "gitlab.kilic.dev/libraries/plumber/v5"
+	. "github.com/cenk1cenk2/plumber/v6"
 )
 
-func Services(tl *TaskList[Pipe]) *Task[Pipe] {
+func Services(tl *TaskList) *Task {
 	return tl.CreateTask("services", "parent").
-		SetJobWrapper(func(_ Job, _ *Task[Pipe]) Job {
-			return tl.JobParallel(
+		SetJobWrapper(func(_ Job, _ *Task) Job {
+			return JobParallel(
 				RunNginx(tl).Job(),
 			)
 		})
 }
 
-func RunNginx(tl *TaskList[Pipe]) *Task[Pipe] {
+func RunNginx(tl *TaskList) *Task {
 	return tl.CreateTask("nginx").
-		Set(func(t *Task[Pipe]) error {
+		Set(func(t *Task) error {
 			t.CreateCommand(
 				"nginx",
 				"-g",
@@ -27,7 +27,7 @@ func RunNginx(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task[Pipe]) error {
+		ShouldRunAfter(func(t *Task) error {
 			return t.RunCommandJobAsJobSequence()
 		})
 }

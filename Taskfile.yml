@@ -7,87 +7,31 @@ vars:
   GO_LD_FLAGS: -w -s
   BINARY_DIR: dist
   BINARY_NAME: pipe
-  BINARY_APPEND_OS: false
-  BINARY_APPEND_ARCH: false
+  BINARY_APPEND_OS: true
+  BINARY_APPEND_ARCH: true
 
 env:
+  GO_VERSION: 1.25
   CGO_ENABLED: 0
 
+includes:
+  go:
+    taskfile: https://gitlab.kilic.dev/libraries/taskfiles/-/raw/main/Taskfile.go-application.yml?ref_type=heads
+    flatten: true
+
 tasks:
-  install:
-    desc: Installs the required dependencies on pull.
-    cmds:
-      - go mod vendor
-    sources:
-      - go.{sum,mod}
-    generates:
-      - "vendor/**"
-
-  format:
-    desc: Formats the current code base.
-    cmds:
-      - goimports -w .
-      - golangci-lint run --fix
-
-  lint:
-    desc: Lints the codebase with predefined rules.
-    cmds:
-      - golangci-lint run
-    sources:
-      - "**/*.go"
-
-  update:
-    desc: Updates all the dependencies to their latest minor version.
-    cmds:
-      - go get -u all
-      - task: tidy
-
-  tidy:
-    desc: Tidies the go.mod file.
-    cmds:
-      - go mod tidy -compat={{ .GO_VERSION }}
-      - task: install
-    sources:
-      - "go.{mod,sum}"
-
-  clean:
-    desc: Cleans the output binary folder and build cache.
-    cmds:
-      - go clean
-      - rm -f {{ .BINARY_DIR }}
-
-  test:
-    desc: Tests the given application.
-    cmds:
-      - go test -v -p 1 ./...
-
   build:
     desc: Builds the application.
-    deps:
+    cmds:
       - task: build.platform
         vars:
+          GO_LD_FLAGS: -w -s -X main.VERSION=BUILD.$(date +%Y%m%dT%H%M%S)
+          BINARY_DIR: dist
+          BINARY_NAME: pipe
+          BINARY_APPEND_OS: true
+          BINARY_APPEND_ARCH: true
           os: linux
           arch: amd64
-
-  build.platform:
-    internal: true
-    vars:
-      binary_output: '{{ .BINARY_DIR }}/{{ .BINARY_NAME }}{{ if .BINARY_APPEND_OS }}-{{ .os }}{{ end }}{{ if .BINARY_APPEND_ARCH }}-{{ .arch }}{{ end }}'
-    cmds:
-      - GOOS={{ .os }} GOARCH={{ .arch }} go build -mod=vendor {{- if .GO_LD_FLAGS }} -ldflags="{{ .GO_LD_FLAGS }}"{{- end }} -o {{ .binary_output }}
-    sources:
-      - "**/*.go"
-      - "go.{mod,sum}"
-    generates:
-      - "{{ .binary_output }}"
-
-  start:
-    desc: Starts the given application.
-    interactive: true
-    env:
-      LOG_LEVEL: debug
-    cmds:
-      - go run . {{ .CLI_ARGS }}
 
   docs:
     desc: Generates the documentation for the application.
@@ -106,7 +50,7 @@ tasks:
   docker.build:
     desc: Builds the docker container for the application for testing.
     cmds:
-      - docker-compose build
+      - docker compose build
     sources:
       - "dist/**"
       - "Dockerfile*"
@@ -118,4 +62,4 @@ tasks:
     cmds:
       - task: build
       - task: docker.build
-      - docker-compose up
+      - docker compose up
