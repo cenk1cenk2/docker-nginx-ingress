@@ -4,7 +4,10 @@ FROM nginx:alpine
 RUN \
   apk add --no-cache tini
 
-COPY --chmod=777 ./dist/pipe /usr/bin/pipe
+ARG BUILDOS
+ARG BUILDARCH
+
+COPY --chmod=777 ./dist/pipe-${BUILDOS}-${BUILDARCH} /usr/bin/pipe
 
 RUN \
   # smoke test

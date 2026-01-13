@@ -1,7 +1,7 @@
 package pipe
 
 import (
-	. "gitlab.kilic.dev/libraries/plumber/v5"
+	. "github.com/cenk1cenk2/plumber/v6"
 )
 
 type (
@@ -10,23 +10,22 @@ type (
 	}
 
 	Pipe struct {
-		Ctx
-
 		Nginx
 	}
 )
 
-var TL = TaskList[Pipe]{
-	Pipe: Pipe{},
-}
+var TL = TaskList{}
 
-func New(p *Plumber) *TaskList[Pipe] {
+var P = &Pipe{}
+var C = &Ctx{}
+
+func New(p *Plumber) *TaskList {
 	return TL.New(p).
-		ShouldRunBefore(func(tl *TaskList[Pipe]) error {
-			return ProcessFlags(tl)
+		ShouldRunBefore(func(tl *TaskList) error {
+			return p.Validate(P)
 		}).
-		Set(func(tl *TaskList[Pipe]) Job {
-			return tl.JobSequence(
+		Set(func(tl *TaskList) Job {
+			return JobSequence(
 				Tasks(tl).Job(),
 				Services(tl).Job(),
 			)

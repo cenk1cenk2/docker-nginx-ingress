@@ -9,19 +9,19 @@ import (
 	"syscall"
 	"text/template"
 
+	. "github.com/cenk1cenk2/plumber/v6"
 	"github.com/google/uuid"
-	. "gitlab.kilic.dev/libraries/plumber/v5"
 )
 
-func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
+func Tasks(tl *TaskList) *Task {
 	return tl.CreateTask("tasks", "parent").
-		SetJobWrapper(func(_ Job, _ *Task[Pipe]) Job {
-			return tl.JobSequence(
+		SetJobWrapper(func(_ Job, _ *Task) Job {
+			return JobSequence(
 				Setup(tl).Job(),
 
-				tl.JobSequence(
+				JobSequence(
 					ReadTemplates(tl).Job(),
-					tl.JobParallel(
+					JobParallel(
 						GenerateNginxConfigurationTemplate(tl).Job(),
 						GenerateTemplates(tl).Job(),
 					),
@@ -30,89 +30,89 @@ func Tasks(tl *TaskList[Pipe]) *Task[Pipe] {
 		})
 }
 
-func Setup(tl *TaskList[Pipe]) *Task[Pipe] {
+func Setup(tl *TaskList) *Task {
 	return tl.CreateTask("init").
-		Set(func(t *Task[Pipe]) error {
-			t.Pipe.Ctx.Directories.ServerConfiguration = path.Join(
+		Set(func(t *Task) error {
+			C.Directories.ServerConfiguration = path.Join(
 				NGINX_ROOT_CONFIGURATION_FOLDER,
 				TEMPLATE_FOLDER_SERVERS,
 			)
 
-			if err := os.RemoveAll(t.Pipe.Ctx.Directories.ServerConfiguration); err != nil {
+			if err := os.RemoveAll(C.Directories.ServerConfiguration); err != nil {
 				return err
 			}
 
-			if err := os.MkdirAll(t.Pipe.Ctx.Directories.ServerConfiguration, os.ModePerm); err != nil {
+			if err := os.MkdirAll(C.Directories.ServerConfiguration, os.ModePerm); err != nil {
 				return err
 			}
 
-			t.Pipe.Ctx.Directories.UpstreamConfiguration = path.Join(
+			C.Directories.UpstreamConfiguration = path.Join(
 				NGINX_ROOT_CONFIGURATION_FOLDER,
 				TEMPLATE_FOLDER_UPSTREAMS,
 			)
 
-			if err := os.RemoveAll(t.Pipe.Ctx.Directories.UpstreamConfiguration); err != nil {
+			if err := os.RemoveAll(C.Directories.UpstreamConfiguration); err != nil {
 				return err
 			}
 
-			return os.MkdirAll(t.Pipe.Ctx.Directories.UpstreamConfiguration, os.ModePerm)
+			return os.MkdirAll(C.Directories.UpstreamConfiguration, os.ModePerm)
 		})
 }
 
-func ReadTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
+func ReadTemplates(tl *TaskList) *Task {
 	return tl.CreateTask("template").
-		Set(func(t *Task[Pipe]) error {
-			t.CreateSubtask("nginx").Set(func(t *Task[Pipe]) error {
+		Set(func(t *Task) error {
+			t.CreateSubtask("nginx").Set(func(t *Task) error {
 				template, err := Templates.ReadFile("templates/nginx.conf.go.tmpl")
 
 				if err != nil {
 					return err
 				}
 
-				t.Pipe.Ctx.Templates.Nginx = string(template)
+				C.Templates.Nginx = string(template)
 
 				return nil
 			}).
 				AddSelfToTheParentAsParallel()
 
-			t.CreateSubtask("server").Set(func(t *Task[Pipe]) error {
+			t.CreateSubtask("server").Set(func(t *Task) error {
 				template, err := Templates.ReadFile("templates/server.conf.go.tmpl")
 
 				if err != nil {
 					return err
 				}
 
-				t.Pipe.Ctx.Templates.Server = string(template)
+				C.Templates.Server = string(template)
 
 				return nil
 			}).
 				AddSelfToTheParentAsParallel()
 
-			t.CreateSubtask("upstream").Set(func(t *Task[Pipe]) error {
+			t.CreateSubtask("upstream").Set(func(t *Task) error {
 				template, err := Templates.ReadFile("templates/upstream.conf.go.tmpl")
 
 				if err != nil {
 					return err
 				}
 
-				t.Pipe.Ctx.Templates.Upstream = string(template)
+				C.Templates.Upstream = string(template)
 
 				return nil
 			}).
 				AddSelfToTheParentAsParallel()
 
 			return nil
-		}).ShouldRunAfter(func(t *Task[Pipe]) error {
+		}).ShouldRunAfter(func(t *Task) error {
 		return t.RunSubtasks()
 	})
 }
 
-func GenerateNginxConfigurationTemplate(tl *TaskList[Pipe]) *Task[Pipe] {
+func GenerateNginxConfigurationTemplate(tl *TaskList) *Task {
 	return tl.CreateTask("generate", "nginx").
-		Set(func(t *Task[Pipe]) error {
+		Set(func(t *Task) error {
 			t.Log.Infof("Creating then Nginx configuration template.")
 
-			tmpl, err := template.New("nginx.conf").Parse(t.Pipe.Ctx.Templates.Nginx)
+			tmpl, err := template.New("nginx.conf").Parse(C.Templates.Nginx)
 
 			if err != nil {
 				return err
@@ -154,23 +154,23 @@ func GenerateNginxConfigurationTemplate(tl *TaskList[Pipe]) *Task[Pipe] {
 		})
 }
 
-func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
+func GenerateTemplates(tl *TaskList) *Task {
 	return tl.CreateTask("generate").
-		Set(func(t *Task[Pipe]) error {
-			for i, v := range t.Pipe.Nginx.Configuration {
+		Set(func(t *Task) error {
+			for i, v := range P.Nginx.Configuration {
 				func(_ int, conf ConfigurationJson) {
 					t.CreateSubtask(conf.Server.Listen).
-						Set(func(t *Task[Pipe]) error {
+						Set(func(t *Task) error {
 							id := uuid.New().String()
 
 							// stream template
 							t.CreateSubtask("server").
-								Set(func(t *Task[Pipe]) error {
+								Set(func(t *Task) error {
 									t.Log.Debugf("Stream %s will have the id: %s", conf.Server.Listen, id)
 
 									t.Log.Infof("Creating server template for: %s", conf.Server.Listen)
 
-									tmpl, err := template.New("server.conf").Parse(t.Pipe.Ctx.Templates.Server)
+									tmpl, err := template.New("server.conf").Parse(C.Templates.Server)
 
 									if err != nil {
 										return err
@@ -193,7 +193,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 									)
 
 									p := path.Join(
-										t.Pipe.Ctx.Directories.ServerConfiguration,
+										C.Directories.ServerConfiguration,
 										fmt.Sprintf("%s.conf", id),
 									)
 
@@ -209,10 +209,10 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 
 								// upstream template
 							t.CreateSubtask("upstream").
-								Set(func(t *Task[Pipe]) error {
+								Set(func(t *Task) error {
 									t.Log.Infof("Creating upstream template for: %s", conf.Server.Listen)
 
-									tmpl, err := template.New("upstream.conf").Parse(t.Pipe.Ctx.Templates.Upstream)
+									tmpl, err := template.New("upstream.conf").Parse(C.Templates.Upstream)
 
 									if err != nil {
 										return err
@@ -235,7 +235,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 									)
 
 									p := path.Join(
-										t.Pipe.Ctx.Directories.UpstreamConfiguration,
+										C.Directories.UpstreamConfiguration,
 										fmt.Sprintf("%s.conf", id),
 									)
 
@@ -254,7 +254,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 							return nil
 						}).
 						AddSelfToTheParentAsParallel().
-						ShouldRunAfter(func(t *Task[Pipe]) error {
+						ShouldRunAfter(func(t *Task) error {
 							return t.RunSubtasks()
 						})
 				}(i, v)
@@ -262,7 +262,7 @@ func GenerateTemplates(tl *TaskList[Pipe]) *Task[Pipe] {
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task[Pipe]) error {
+		ShouldRunAfter(func(t *Task) error {
 			return t.RunSubtasks()
 		})
 }
