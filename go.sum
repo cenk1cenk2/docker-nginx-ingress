@@ -1,5 +1,5 @@
-github.com/cenk1cenk2/plumber/v6 v6.3.14 h1:KpvB2I66yUvpsqfBdgoCdcgYGRrbDo3iIy7TvLr0STA=
-github.com/cenk1cenk2/plumber/v6 v6.3.14/go.mod h1:Qlxa1FP3cMBgXBGUdqz1//UFKIQS23ENNmshr/AV5C0=
+github.com/cenk1cenk2/plumber/v6 v6.3.15 h1:2rCO8OoRum5aOrLb+6k86u9qUkLZuPdZdWXUO0XxH/I=
+github.com/cenk1cenk2/plumber/v6 v6.3.15/go.mod h1:Qlxa1FP3cMBgXBGUdqz1//UFKIQS23ENNmshr/AV5C0=
 github.com/creasty/defaults v1.8.0 h1:z27FJxCAa0JKt3utc0sCImAEb+spPucmKoOdLHvHYKk=
 github.com/creasty/defaults v1.8.0/go.mod h1:iGzKe6pbEHnpMPtfDXZEr0NVxWnPTjb1bbDy08fPzYM=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
