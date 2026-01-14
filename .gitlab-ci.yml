@@ -19,7 +19,7 @@ include:
     inputs:
       version: 1.25-alpine
   - project: devops/pipelines
-    ref: buildah@1.2.1
+    ref: buildah@1.2.2
     file:
       - /buildah/build.gitlab-ci.yml
       - /buildah/manifest.gitlab-ci.yml
