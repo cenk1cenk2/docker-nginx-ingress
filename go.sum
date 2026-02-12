@@ -1,5 +1,5 @@
-github.com/cenk1cenk2/plumber/v6 v6.3.20 h1:Pc8m1l65dBilujZDDUC1/RLID61aP1+rVvPdq6QWavw=
-github.com/cenk1cenk2/plumber/v6 v6.3.20/go.mod h1:q2kGzE4Q4RFJH5oFyQ5EDJUEA8M1LTau4+Cpi3lD+ds=
+github.com/cenk1cenk2/plumber/v6 v6.3.21 h1:N6ENRz2oHS7epC0R5MqARWKZfEfrYjY/vpuKp5WxdwQ=
+github.com/cenk1cenk2/plumber/v6 v6.3.21/go.mod h1:pqPsyosVzUH2jBOPkG7GR5CrkXv+6ta5+Pvx5Z02WWw=
 github.com/creasty/defaults v1.8.0 h1:z27FJxCAa0JKt3utc0sCImAEb+spPucmKoOdLHvHYKk=
 github.com/creasty/defaults v1.8.0/go.mod h1:iGzKe6pbEHnpMPtfDXZEr0NVxWnPTjb1bbDy08fPzYM=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
@@ -38,8 +38,8 @@ gitlab.kilic.dev/libraries/go-utils/v2 v2.2.4 h1:glokDSz59vlNpa0OFR74V4tUfrOAQXa
 gitlab.kilic.dev/libraries/go-utils/v2 v2.2.4/go.mod h1:Nh7ukBIbgLqgKt8T1G8jy4YzB/m2HK8VHjUlQ2vvx/8=
 golang.org/x/crypto v0.46.0 h1:cKRW/pmt1pKAfetfu+RCEvjvZkA9RimPbh7bhFjGVBU=
 golang.org/x/crypto v0.46.0/go.mod h1:Evb/oLKmMraqjZ2iQTwDwvCtJkczlDuTmdJXoZVzqU0=
-golang.org/x/exp v0.0.0-20260211191109-2735e65f0518 h1:2E1CW7v5QB+Wi3N+MXllOtVR6SFmI8iJM8EdzgxrgrU=
-golang.org/x/exp v0.0.0-20260211191109-2735e65f0518/go.mod h1:K79w1Vqn7PoiZn+TkNpx3BUWUQksGO3JcVX6qIjytmA=
+golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a h1:ovFr6Z0MNmU7nH8VaX5xqw+05ST2uO1exVfZPVqRC5o=
+golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a/go.mod h1:K79w1Vqn7PoiZn+TkNpx3BUWUQksGO3JcVX6qIjytmA=
 golang.org/x/sys v0.41.0 h1:Ivj+2Cp/ylzLiEU89QhWblYnOE9zerudt9Ftecq2C6k=
 golang.org/x/sys v0.41.0/go.mod h1:OgkHotnGiDImocRcuBABYBEXf8A9a87e/uXjp9XT3ks=
 golang.org/x/text v0.33.0 h1:B3njUFyqtHDUI5jMn1YIr5B0IE2U0qck04r6d4KPAxE=
