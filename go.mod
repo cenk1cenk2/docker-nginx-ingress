@@ -5,7 +5,7 @@ go 1.25.1
 require (
 	github.com/cenk1cenk2/plumber/v6 v6.3.22
 	github.com/google/uuid v1.6.0
-	github.com/urfave/cli/v3 v3.6.2
+	github.com/urfave/cli/v3 v3.7.0
 )
 
 require (
