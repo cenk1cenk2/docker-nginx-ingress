@@ -7,7 +7,7 @@ stages:
 
 variables:
   GO_VERSION: 1.25-alpine
-  CONTAINER_IMAGE_NAME: cenk1cenk2/vizier
+  CONTAINER_IMAGE_NAME: cenk1cenk2/nginx-ingress
 
 include:
   - project: devops/pipelines
@@ -62,20 +62,22 @@ container:
         CONTAINER_MANIFEST_TARGET: latest
         GITLAB_CI_ARCH:
           - amd64
-  dependencies:
-    - build
+  needs:
+    - job: lint
+      artifacts: false
+    - job: build
+      artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "schedule"
-      when: always
 
 manifest:
   stage: post
   extends: .container-manifest
-  dependencies:
-    - container
+  needs:
+    - job: container
+      artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "schedule"
-      when: always
 
 update-docker-hub-readme:
   stage: post
@@ -83,7 +85,8 @@ update-docker-hub-readme:
   variables:
     README_DESCRIPTION: |
       A very basic and dirty supervisor for multiple tasks running inside a Docker container.
-  dependencies: []
+  needs:
+    - job: container
+      artifacts: false
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "schedule"
-      when: always
