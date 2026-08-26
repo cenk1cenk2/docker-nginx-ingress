@@ -1,7 +1,7 @@
 package pipe
 
 import (
-	"encoding/json"
+	json "encoding/json/v2"
 	"fmt"
 
 	"github.com/urfave/cli/v3"
@@ -18,7 +18,7 @@ var Flags = []cli.Flag{
 			cli.EnvVar("NGINX_INGRESS"),
 		),
 		Validator: func(v string) error {
-			if err := json.Unmarshal([]byte(v), &P.Nginx.Configuration); err != nil {
+			if err := json.Unmarshal([]byte(v), &P.Nginx.Configuration, json.RejectUnknownMembers(true)); err != nil {
 				return fmt.Errorf("Can not unmarshal configuration: %w", err)
 			}
 
