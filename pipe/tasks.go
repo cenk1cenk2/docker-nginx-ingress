@@ -8,9 +8,9 @@ import (
 	"runtime"
 	"syscall"
 	"text/template"
+	"uuid"
 
 	. "github.com/cenk1cenk2/plumber/v6"
-	"github.com/google/uuid"
 )
 
 func Tasks(tl *TaskList) *Task {
@@ -157,107 +157,105 @@ func GenerateNginxConfigurationTemplate(tl *TaskList) *Task {
 func GenerateTemplates(tl *TaskList) *Task {
 	return tl.CreateTask("generate").
 		Set(func(t *Task) error {
-			for i, v := range P.Nginx.Configuration {
-				func(_ int, conf ConfigurationJson) {
-					t.CreateSubtask(conf.Server.Listen).
-						Set(func(t *Task) error {
-							id := uuid.New().String()
+			for _, conf := range P.Nginx.Configuration {
+				t.CreateSubtask(conf.Server.Listen).
+					Set(func(t *Task) error {
+						id := uuid.New().String()
 
-							// stream template
-							t.CreateSubtask("server").
-								Set(func(t *Task) error {
-									t.Log.Debugf("Stream %s will have the id: %s", conf.Server.Listen, id)
+						// stream template
+						t.CreateSubtask("server").
+							Set(func(t *Task) error {
+								t.Log.Debugf("Stream %s will have the id: %s", conf.Server.Listen, id)
 
-									t.Log.Infof("Creating server template for: %s", conf.Server.Listen)
+								t.Log.Infof("Creating server template for: %s", conf.Server.Listen)
 
-									tmpl, err := template.New("server.conf").Parse(C.Templates.Server)
+								tmpl, err := template.New("server.conf").Parse(C.Templates.Server)
 
-									if err != nil {
-										return err
-									}
+								if err != nil {
+									return err
+								}
 
-									output := new(bytes.Buffer)
+								output := new(bytes.Buffer)
 
-									if err = tmpl.Execute(output, ServerTemplate{
-										Listen:   conf.Server.Listen,
-										Upstream: id,
-										Options:  conf.Server.Options,
-									}); err != nil {
-										return err
-									}
+								if err = tmpl.Execute(output, ServerTemplate{
+									Listen:   conf.Server.Listen,
+									Upstream: id,
+									Options:  conf.Server.Options,
+								}); err != nil {
+									return err
+								}
 
-									t.Log.Debugf(
-										"Server template for %s:\n%s",
-										conf.Server.Listen,
-										output.String(),
-									)
+								t.Log.Debugf(
+									"Server template for %s:\n%s",
+									conf.Server.Listen,
+									output.String(),
+								)
 
-									p := path.Join(
-										C.Directories.ServerConfiguration,
-										fmt.Sprintf("%s.conf", id),
-									)
+								p := path.Join(
+									C.Directories.ServerConfiguration,
+									fmt.Sprintf("%s.conf", id),
+								)
 
-									t.Log.Debugf(
-										"Writing service file for %s: %s",
+								t.Log.Debugf(
+									"Writing service file for %s: %s",
+									conf.Server.Listen,
+									p,
+								)
+
+								return os.WriteFile(p, output.Bytes(), 0600)
+							}).
+							AddSelfToTheParentAsParallel()
+
+							// upstream template
+						t.CreateSubtask("upstream").
+							Set(func(t *Task) error {
+								t.Log.Infof("Creating upstream template for: %s", conf.Server.Listen)
+
+								tmpl, err := template.New("upstream.conf").Parse(C.Templates.Upstream)
+
+								if err != nil {
+									return err
+								}
+
+								output := new(bytes.Buffer)
+
+								if err := tmpl.Execute(output, UpstreamTemplate{
+									Upstream: id,
+									Servers:  conf.Upstream.Servers,
+									Options:  conf.Upstream.Options,
+								}); err != nil {
+									return err
+								}
+
+								t.Log.Debugf(
+									"Upstream template for %s:\n%s",
+									conf.Server.Listen,
+									output.String(),
+								)
+
+								p := path.Join(
+									C.Directories.UpstreamConfiguration,
+									fmt.Sprintf("%s.conf", id),
+								)
+
+								t.Log.Debugln(
+									fmt.Sprintf(
+										"Writing upstream file for %s: %s",
 										conf.Server.Listen,
 										p,
-									)
+									),
+								)
 
-									return os.WriteFile(p, output.Bytes(), 0600)
-								}).
-								AddSelfToTheParentAsParallel()
+								return os.WriteFile(p, output.Bytes(), 0600)
+							}).
+							AddSelfToTheParentAsParallel()
 
-								// upstream template
-							t.CreateSubtask("upstream").
-								Set(func(t *Task) error {
-									t.Log.Infof("Creating upstream template for: %s", conf.Server.Listen)
-
-									tmpl, err := template.New("upstream.conf").Parse(C.Templates.Upstream)
-
-									if err != nil {
-										return err
-									}
-
-									output := new(bytes.Buffer)
-
-									if err := tmpl.Execute(output, UpstreamTemplate{
-										Upstream: id,
-										Servers:  conf.Upstream.Servers,
-										Options:  conf.Upstream.Options,
-									}); err != nil {
-										return err
-									}
-
-									t.Log.Debugf(
-										"Upstream template for %s:\n%s",
-										conf.Server.Listen,
-										output.String(),
-									)
-
-									p := path.Join(
-										C.Directories.UpstreamConfiguration,
-										fmt.Sprintf("%s.conf", id),
-									)
-
-									t.Log.Debugln(
-										fmt.Sprintf(
-											"Writing upstream file for %s: %s",
-											conf.Server.Listen,
-											p,
-										),
-									)
-
-									return os.WriteFile(p, output.Bytes(), 0600)
-								}).
-								AddSelfToTheParentAsParallel()
-
-							return nil
-						}).
-						AddSelfToTheParentAsParallel().
-						ShouldRunAfter(func(t *Task) error {
-							return t.RunSubtasks()
-						})
-				}(i, v)
+						return nil
+					}).
+					AddSelfToTheParentAsParallel().
+					ShouldRunAfter(func(t *Task) error {
+						return t.RunSubtasks()
+					})
 			}
 
 			return nil

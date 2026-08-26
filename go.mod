@@ -1,10 +1,9 @@
 module gitlab.kilic.dev/docker/nginx-ingress
 
-go 1.25.5
+go 1.27.0
 
 require (
 	github.com/cenk1cenk2/plumber/v6 v6.4.7
-	github.com/google/uuid v1.6.0
 	github.com/urfave/cli/v3 v3.10.1
 )
 
