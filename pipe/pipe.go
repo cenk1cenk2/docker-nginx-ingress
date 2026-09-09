@@ -1,7 +1,9 @@
 package pipe
 
 import (
-	. "github.com/cenk1cenk2/plumber/v6"
+	"context"
+
+	. "github.com/cenk1cenk2/plumber/v7"
 )
 
 type (
@@ -21,7 +23,7 @@ var C = &Ctx{}
 
 func New(p *Plumber) *TaskList {
 	return TL.New(p).
-		ShouldRunBefore(func(tl *TaskList) error {
+		ShouldRunBefore(func(_ context.Context, tl *TaskList) error {
 			return p.Validate(P)
 		}).
 		Set(func(tl *TaskList) Job {
