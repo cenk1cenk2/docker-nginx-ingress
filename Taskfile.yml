@@ -38,9 +38,12 @@ tasks:
     interactive: true
     env:
       LOG_LEVEL: trace
+      # urfave/cli still enforces the root command's required flags for a subcommand, so the docs
+      # command can not generate without one being present.
+      NGINX_INGRESS: "[]"
     cmds:
-      - go run . MARKDOWN_DOC
-      - go run . MARKDOWN_EMBED
+      - go run . docs markdown
+      - go run . docs embed
 
   help:
     desc: Generates help for the application.

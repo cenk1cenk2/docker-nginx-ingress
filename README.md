@@ -13,6 +13,7 @@ Nginx ingress controller for docker-compose stacks, where it takes in a JSON env
 - [Setup](#setup)
 - [Environment Variables](#environment-variables)
   - [`NGINX_INGRESS`](#nginx_ingress)
+- [Flags](#flags)
   - [CLI](#cli)
 
 <!-- tocstop -->
@@ -50,15 +51,19 @@ The environment variable `NGINX_INGRESS` is an array of objects in the JSON form
 
 <!-- clidocs -->
 
-| Flag / Environment |  Description   |  Type    | Required | Default |
-|---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$NGINX_INGRESS` | The configuration for the ingress operation of Nginx. | `string`<br/>`json({ server: struct { listen: string, options: map[string]string }, upstream: struct { servers: []string, options: map[string]string } })` | `true` | <code></code> |
+## Flags
+
+| Flag / Environment | Description | Type | Default |
+| --- | --- | --- | --- |
+| **`$NGINX_INGRESS`**\* | The configuration for the ingress operation of Nginx. | `string`<br/>`json({ server: struct { listen: string, options: map[string]string }, upstream: struct { servers: []string, options: map[string]string } })` |  |
+
+\* required
 
 **CLI**
 
-| Flag / Environment |  Description   |  Type    | Required | Default |
-|---------------- | --------------- | --------------- |  --------------- |  --------------- |
-| `$LOG_LEVEL` | Define the log level for the application. | `string`<br/>`enum("panic", "fatal", "warn", "info", "debug", "trace")` | `false` | <code>"info"</code> |
-| `$ENV_FILE` | Environment files to inject. | `string[]` | `false` | <code></code> |
+| Flag / Environment | Description | Type | Default |
+| --- | --- | --- | --- |
+| `$LOG_LEVEL` | Define the log level for the application. | `string`<br/>`enum("panic", "fatal", "warn", "info", "debug", "trace")` | `"info"` |
+| `$ENV_FILE` | Environment files to inject. | `string[]` |  |
 
 <!-- clidocsstop -->

@@ -2,6 +2,7 @@ package pipe
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"path"
@@ -10,7 +11,7 @@ import (
 	"text/template"
 	"uuid"
 
-	. "github.com/cenk1cenk2/plumber/v6"
+	. "github.com/cenk1cenk2/plumber/v7"
 )
 
 func Tasks(tl *TaskList) *Task {
@@ -32,7 +33,7 @@ func Tasks(tl *TaskList) *Task {
 
 func Setup(tl *TaskList) *Task {
 	return tl.CreateTask("init").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			C.Directories.ServerConfiguration = path.Join(
 				NGINX_ROOT_CONFIGURATION_FOLDER,
 				TEMPLATE_FOLDER_SERVERS,
@@ -61,8 +62,8 @@ func Setup(tl *TaskList) *Task {
 
 func ReadTemplates(tl *TaskList) *Task {
 	return tl.CreateTask("template").
-		Set(func(t *Task) error {
-			t.CreateSubtask("nginx").Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
+			t.CreateSubtask("nginx").Set(func(_ context.Context, t *Task) error {
 				template, err := Templates.ReadFile("templates/nginx.conf.go.tmpl")
 
 				if err != nil {
@@ -75,7 +76,7 @@ func ReadTemplates(tl *TaskList) *Task {
 			}).
 				AddSelfToTheParentAsParallel()
 
-			t.CreateSubtask("server").Set(func(t *Task) error {
+			t.CreateSubtask("server").Set(func(_ context.Context, t *Task) error {
 				template, err := Templates.ReadFile("templates/server.conf.go.tmpl")
 
 				if err != nil {
@@ -88,7 +89,7 @@ func ReadTemplates(tl *TaskList) *Task {
 			}).
 				AddSelfToTheParentAsParallel()
 
-			t.CreateSubtask("upstream").Set(func(t *Task) error {
+			t.CreateSubtask("upstream").Set(func(_ context.Context, t *Task) error {
 				template, err := Templates.ReadFile("templates/upstream.conf.go.tmpl")
 
 				if err != nil {
@@ -102,15 +103,15 @@ func ReadTemplates(tl *TaskList) *Task {
 				AddSelfToTheParentAsParallel()
 
 			return nil
-		}).ShouldRunAfter(func(t *Task) error {
-		return t.RunSubtasks()
+		}).ShouldRunAfter(func(ctx context.Context, t *Task) error {
+		return t.RunSubtasks(ctx)
 	})
 }
 
 func GenerateNginxConfigurationTemplate(tl *TaskList) *Task {
 	return tl.CreateTask("generate", "nginx").
-		Set(func(t *Task) error {
-			t.Log.Infof("Creating then Nginx configuration template.")
+		Set(func(_ context.Context, t *Task) error {
+			t.Log.Info("Creating then Nginx configuration template.")
 
 			tmpl, err := template.New("nginx.conf").Parse(C.Templates.Nginx)
 
@@ -136,9 +137,11 @@ func GenerateNginxConfigurationTemplate(tl *TaskList) *Task {
 				return err
 			}
 
-			t.Log.Debugf(
-				"Nginx configuration template:\n%s",
-				output.String(),
+			t.Log.Debug(
+				fmt.Sprintf(
+					"Nginx configuration template:\n%s",
+					output.String(),
+				),
 			)
 
 			p := path.Join(
@@ -146,7 +149,7 @@ func GenerateNginxConfigurationTemplate(tl *TaskList) *Task {
 				NGINX_CONFIGURATION,
 			)
 
-			t.Log.Debugln(
+			t.Log.Debug(
 				"Writing Nginx configuration file.",
 			)
 
@@ -156,18 +159,18 @@ func GenerateNginxConfigurationTemplate(tl *TaskList) *Task {
 
 func GenerateTemplates(tl *TaskList) *Task {
 	return tl.CreateTask("generate").
-		Set(func(t *Task) error {
+		Set(func(_ context.Context, t *Task) error {
 			for _, conf := range P.Nginx.Configuration {
 				t.CreateSubtask(conf.Server.Listen).
-					Set(func(t *Task) error {
+					Set(func(_ context.Context, t *Task) error {
 						id := uuid.New().String()
 
 						// stream template
 						t.CreateSubtask("server").
-							Set(func(t *Task) error {
-								t.Log.Debugf("Stream %s will have the id: %s", conf.Server.Listen, id)
+							Set(func(_ context.Context, t *Task) error {
+								t.Log.Debug(fmt.Sprintf("Stream %s will have the id: %s", conf.Server.Listen, id))
 
-								t.Log.Infof("Creating server template for: %s", conf.Server.Listen)
+								t.Log.Info(fmt.Sprintf("Creating server template for: %s", conf.Server.Listen))
 
 								tmpl, err := template.New("server.conf").Parse(C.Templates.Server)
 
@@ -185,10 +188,12 @@ func GenerateTemplates(tl *TaskList) *Task {
 									return err
 								}
 
-								t.Log.Debugf(
-									"Server template for %s:\n%s",
-									conf.Server.Listen,
-									output.String(),
+								t.Log.Debug(
+									fmt.Sprintf(
+										"Server template for %s:\n%s",
+										conf.Server.Listen,
+										output.String(),
+									),
 								)
 
 								p := path.Join(
@@ -196,10 +201,12 @@ func GenerateTemplates(tl *TaskList) *Task {
 									fmt.Sprintf("%s.conf", id),
 								)
 
-								t.Log.Debugf(
-									"Writing service file for %s: %s",
-									conf.Server.Listen,
-									p,
+								t.Log.Debug(
+									fmt.Sprintf(
+										"Writing service file for %s: %s",
+										conf.Server.Listen,
+										p,
+									),
 								)
 
 								return os.WriteFile(p, output.Bytes(), 0600)
@@ -208,8 +215,8 @@ func GenerateTemplates(tl *TaskList) *Task {
 
 							// upstream template
 						t.CreateSubtask("upstream").
-							Set(func(t *Task) error {
-								t.Log.Infof("Creating upstream template for: %s", conf.Server.Listen)
+							Set(func(_ context.Context, t *Task) error {
+								t.Log.Info(fmt.Sprintf("Creating upstream template for: %s", conf.Server.Listen))
 
 								tmpl, err := template.New("upstream.conf").Parse(C.Templates.Upstream)
 
@@ -227,10 +234,12 @@ func GenerateTemplates(tl *TaskList) *Task {
 									return err
 								}
 
-								t.Log.Debugf(
-									"Upstream template for %s:\n%s",
-									conf.Server.Listen,
-									output.String(),
+								t.Log.Debug(
+									fmt.Sprintf(
+										"Upstream template for %s:\n%s",
+										conf.Server.Listen,
+										output.String(),
+									),
 								)
 
 								p := path.Join(
@@ -238,7 +247,7 @@ func GenerateTemplates(tl *TaskList) *Task {
 									fmt.Sprintf("%s.conf", id),
 								)
 
-								t.Log.Debugln(
+								t.Log.Debug(
 									fmt.Sprintf(
 										"Writing upstream file for %s: %s",
 										conf.Server.Listen,
@@ -253,14 +262,14 @@ func GenerateTemplates(tl *TaskList) *Task {
 						return nil
 					}).
 					AddSelfToTheParentAsParallel().
-					ShouldRunAfter(func(t *Task) error {
-						return t.RunSubtasks()
+					ShouldRunAfter(func(ctx context.Context, t *Task) error {
+						return t.RunSubtasks(ctx)
 					})
 			}
 
 			return nil
 		}).
-		ShouldRunAfter(func(t *Task) error {
-			return t.RunSubtasks()
+		ShouldRunAfter(func(ctx context.Context, t *Task) error {
+			return t.RunSubtasks(ctx)
 		})
 }

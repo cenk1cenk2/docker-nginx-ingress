@@ -5,7 +5,7 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	. "github.com/cenk1cenk2/plumber/v6"
+	. "github.com/cenk1cenk2/plumber/v7"
 	"gitlab.kilic.dev/docker/nginx-ingress/pipe"
 )
 
@@ -18,6 +18,9 @@ func main() {
 				Usage:       DESCRIPTION,
 				Description: DESCRIPTION,
 				Flags:       pipe.Flags,
+				Commands: []*cli.Command{
+					DocsCommand(p),
+				},
 				Before: func(ctx context.Context, _ *cli.Command) (context.Context, error) {
 					p.EnableTerminator()
 
