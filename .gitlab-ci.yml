@@ -11,7 +11,7 @@ variables:
 
 include:
   - project: devops/pipelines
-    ref: go@2.0.0
+    ref: go@2.0.1
     file:
       - /go/install.gitlab-ci.yml
       - /go/lint.gitlab-ci.yml
@@ -19,13 +19,13 @@ include:
     inputs:
       version: 1.27-alpine
   - project: devops/pipelines
-    ref: buildah@2.0.0
+    ref: buildah@2.0.1
     file:
       - /buildah/build.gitlab-ci.yml
       - /buildah/manifest.gitlab-ci.yml
       - /buildah/registry-dockerhub.gitlab-ci.yml
   - project: devops/pipelines
-    ref: docker@2.0.0
+    ref: docker@2.0.1
     file:
       - /docker/update-docker-hub-readme.gitlab-ci.yml
 
