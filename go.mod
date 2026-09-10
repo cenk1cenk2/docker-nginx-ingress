@@ -3,7 +3,7 @@ module gitlab.kilic.dev/docker/nginx-ingress
 go 1.27.0
 
 require (
-	github.com/cenk1cenk2/plumber/v7 v7.1.0
+	github.com/cenk1cenk2/plumber/v7 v7.2.3
 	github.com/urfave/cli/v3 v3.11.0
 )
 
