@@ -3,7 +3,7 @@ module gitlab.kilic.dev/docker/nginx-ingress
 go 1.27.0
 
 require (
-	github.com/cenk1cenk2/plumber/v7 v7.2.5
+	github.com/cenk1cenk2/plumber/v7 v7.2.6
 	github.com/urfave/cli/v3 v3.13.0
 )
 
@@ -17,11 +17,11 @@ require (
 	github.com/charmbracelet/x/windows v0.2.2 // indirect
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
-	github.com/creasty/defaults v1.10.0 // indirect
+	github.com/creasty/defaults v1.11.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.15 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.30.4 // indirect
+	github.com/go-playground/validator/v10 v10.30.5 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/leodido/go-urn v1.5.0 // indirect
