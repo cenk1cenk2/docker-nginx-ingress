@@ -3,7 +3,7 @@ module gitlab.kilic.dev/docker/nginx-ingress
 go 1.27.0
 
 require (
-	github.com/cenk1cenk2/plumber/v7 v7.2.6
+	github.com/cenk1cenk2/plumber/v7 v7.2.7
 	github.com/urfave/cli/v3 v3.13.0
 )
 
@@ -29,7 +29,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.24 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	github.com/xo/terminfo v1.0.0 // indirect
 	golang.org/x/crypto v0.57.0 // indirect
 	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
