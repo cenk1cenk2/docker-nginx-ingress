@@ -11,7 +11,7 @@ variables:
 
 include:
   - project: devops/pipelines
-    ref: go@2.0.1
+    ref: go@2.0.2
     file:
       - /go/install.gitlab-ci.yml
       - /go/lint.gitlab-ci.yml
