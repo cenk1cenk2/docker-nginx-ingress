@@ -1,7 +1,15 @@
 ---
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v/
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: always
+
 stages:
   - install
   - build
+  - version
   - container
   - post
 
@@ -18,6 +26,10 @@ include:
       - /go/build.gitlab-ci.yml
     inputs:
       version: 1.27-alpine
+  - project: devops/pipelines
+    ref: semantic-release@2.3.1
+    file:
+      - /semantic-release/publish.gitlab-ci.yml
   - project: devops/pipelines
     ref: buildah@2.0.1
     file:
@@ -48,18 +60,31 @@ build:
       - os: linux
         arch: amd64
     GO_BUILD_VARIABLES: |-
-      main.VERSION: '{{ now | date "2006-01-02T15:04:05Z0700" }}'
+      main.VERSION: '{{ env "CI_COMMIT_TAG" | default (printf "BUILD.%s" (now | date "2006-01-02T15:04:05Z0700")) }}'
   extends:
     - .go-build
+
+version:
+  stage: version
+  extends:
+    - .semantic-release
+  needs:
+    - lint
+    - build
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: on_success
+    - when: never
 
 container:
   stage: container
   extends: .container-build
+  variables:
+    CONTAINER_IMAGE_TAGS: latest-${GITLAB_CI_ARCH}
+    CONTAINER_MANIFEST_TARGET: latest
   parallel:
     matrix:
       - CONTAINER_FILE_NAME: Dockerfile
-        CONTAINER_IMAGE_TAGS: latest-${GITLAB_CI_ARCH}
-        CONTAINER_MANIFEST_TARGET: latest
         GITLAB_CI_ARCH:
           - amd64
   needs:
@@ -69,6 +94,10 @@ container:
       artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_TAG
+      variables:
+        CONTAINER_IMAGE_TAGS: ${CI_COMMIT_TAG}-${GITLAB_CI_ARCH}
+        CONTAINER_MANIFEST_TARGET: $CI_COMMIT_TAG
 
 manifest:
   stage: post
@@ -78,6 +107,9 @@ manifest:
       artifacts: true
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_TAG
+      variables:
+        CONTAINER_MANIFEST_TARGET: $CI_COMMIT_TAG
 
 update-docker-hub-readme:
   stage: post
