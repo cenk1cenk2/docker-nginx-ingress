@@ -20,7 +20,7 @@ include:
     inputs:
       version: 1.27-alpine
   - project: devops/pipelines
-    ref: semantic-release@2.5.1
+    ref: semantic-release@2.5.2
     file:
       - /semantic-release/publish.gitlab-ci.yml
   - project: devops/pipelines
