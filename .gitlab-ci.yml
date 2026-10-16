@@ -8,7 +8,7 @@ stages:
 
 variables:
   GO_VERSION: 1.27-alpine
-  CONTAINER_IMAGE_NAME: cenk1cenk2/nginx-ingress
+  CONTAINER_IMAGE_NAME: docker.io/cenk1cenk2/nginx-ingress
 
 include:
   - project: devops/pipelines
