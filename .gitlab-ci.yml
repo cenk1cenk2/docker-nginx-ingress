@@ -20,7 +20,7 @@ include:
     inputs:
       version: 1.27-alpine
   - project: devops/pipelines
-    ref: semantic-release@2.5.2
+    ref: semantic-release@3.0.0
     file:
       - /semantic-release/publish.gitlab-ci.yml
   - project: devops/pipelines
@@ -33,6 +33,9 @@ include:
     ref: docker@2.0.1
     file:
       - /docker/update-docker-hub-readme.gitlab-ci.yml
+  - project: devops/pipelines
+    ref: references@1.5.0
+    file: /references/workflow.gitlab-ci.yml
 
 install:
   stage: install
@@ -63,7 +66,8 @@ version:
     - .semantic-release
   needs:
     - lint
-    - build
+    - job: build
+      artifacts: false
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       when: on_success
