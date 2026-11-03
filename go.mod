@@ -3,7 +3,7 @@ module gitlab.kilic.dev/docker/nginx-ingress
 go 1.27.0
 
 require (
-	github.com/cenk1cenk2/plumber/v7 v7.2.9
+	github.com/cenk1cenk2/plumber/v7 v7.2.10
 	github.com/urfave/cli/v3 v3.14.0
 )
 
@@ -18,10 +18,10 @@ require (
 	github.com/clipperhouse/displaywidth v0.11.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/creasty/defaults v1.11.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.15 // indirect
-	github.com/go-playground/locales v0.14.1 // indirect
-	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.30.5 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.16 // indirect
+	github.com/go-playground/locales v0.14.2 // indirect
+	github.com/go-playground/universal-translator v0.18.2 // indirect
+	github.com/go-playground/validator/v10 v10.30.6 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/leodido/go-urn v1.5.0 // indirect
@@ -30,10 +30,10 @@ require (
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/xo/terminfo v1.0.0 // indirect
-	golang.org/x/crypto v0.57.0 // indirect
-	golang.org/x/sync v0.23.0 // indirect
-	golang.org/x/sys v0.48.0 // indirect
-	golang.org/x/text v0.42.0 // indirect
+	golang.org/x/crypto v0.58.0 // indirect
+	golang.org/x/sync v0.24.0 // indirect
+	golang.org/x/sys v0.49.0 // indirect
+	golang.org/x/text v0.43.0 // indirect
 )
 
 // replace gitlab.kilic.dev/libraries/plumber/v4 => /home/cenk/development/plumber
